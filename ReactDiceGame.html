@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+
+<head>
+  <title>Dice Rolling Application</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js" crossorigin></script>
+
+  <style>
+    h1 {
+      display: inline;
+      color: whitesmoke;
+      font-family: Monospace;
+    }
+
+    h3{
+     
+      text-align: center;
+      color: whitesmoke;
+      font-family: Monospace;
+      font-size: 5em;
+    }
+
+    .rollbutton {
+      border-radius: 12px;
+      background-color: red;
+      padding: 20px;
+      text-align: center;
+      margin-left: 10em;
+      font-weight: bold;
+    }
+
+    .button {
+      background-color: #78361e;
+      /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 12px;
+      font-family: Monospace;
+    }
+
+
+    .grid-container {
+      display: grid;
+      grid-gap: 3px;
+      grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+      ;
+      background-color: rgb(27, 24, 47);
+      padding: 5px;
+    }
+
+    .grid-item {
+      background-color: white;
+      border: 3px solid rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      font-size: 30px;
+      text-align: center;
+      margin: 0.5em;
+
+    }
+
+    body {
+      margin-top: 10em;
+      background-color: rgb(27, 24, 47);
+
+
+    }
+  </style>
+</head>
+
+<body>
+
+
+  
+  <div id="container"></div>
+
+
+
+
+
+  <script type="text/babel">
+
+class Title extends React.Component{
+
+render(){
+  return(
+
+  <div>
+  <h3>Dice Game - Alexander Hernandez</h3>
+  </div>
+
+  )
+}
+
+};
+
+    //render single dice to the page
+  class Dice extends React.Component 
+  {
+    render() 
+    { 
+      return (<div className="grid-item" onClick={this.props.increaseDiceCount}>
+        
+                {this.props.dice}
+              </div>)
+    }
+  };
+
+
+  //the Dice applicaiton component
+  class DiceApp extends React.Component {
+
+    constructor(props) {
+      super(props);
+      this.state =
+        {
+          numberOfDices: parseInt(this.props.theProp),
+          list_of_dices: [{key: 1,
+                        digit: 1}],
+          number_of_faces: 6,
+          dice_id: 1,
+                  
+        };
+    }
+    
+
+    // Roll all dices on the screen
+    rollAllDices(){
+
+
+
+      let new_dices = this.state.list_of_dices.slice();
+
+      for (let i = 0; i < new_dices.length; i++){
+
+        new_dices[i].digit = Math.floor(Math.random() * (this.state.number_of_faces - 1 + 1)) + 1;
+
+        if(new_dices[i].digit > this.state.number_of_faces){
+              new_dices[i].digit = 1;
+             }
+        
+      }
+
+      this.setState( {digit: new_dices} );
+      
+    }
+    
+// Increase the number in the dice that you have pressed
+    increaseDiceCount(dice_key)
+    {
+
+      let new_dices = this.state.list_of_dices.slice();
+
+
+      for (let i = 0; i < new_dices.length; i++)
+      {
+        
+        if (new_dices[i].key == dice_key)
+        {
+          
+            new_dices[i].digit++;
+
+
+            if(new_dices[i].digit > this.state.number_of_faces){
+              new_dices[i].digit = 1;
+            }
+        }
+
+        
+      }
+
+      this.setState( {digit: new_dices} );
+    }
+
+
+    //reset the application back to its default
+    resetCounter(){
+      this.setState({numberOfDices: parseInt(this.props.theProp),
+        list_of_dices: [{key: 1,
+                        digit: 1}],
+        number_of_faces: 6 ,
+        dice_id: 1,
+      });
+
+    }
+
+     // displays the dice
+     showDice(dice)
+    {
+      return <Dice 
+      key={dice.key}
+      id={dice.key} 
+      dice={dice.digit}  
+      increaseDiceCount= {this.increaseDiceCount.bind(this, dice.key)}
+      rollAllDiceValue= {this.rollAllDices.bind(this, dice.key)}>
+      </Dice>
+    }
+
+    //Create a new dice when the number beside number of dices has been pressed
+    createDice()
+    {
+      
+      let dice_id = this.state.dice_id + 1;
+      
+
+     //create new dice
+      let new_dice = {key: dice_id,
+                        digit: 1};
+
+      // create a copy of the existing array of dice data
+      let new_dices = this.state.list_of_dices.slice();
+
+      // add new dice to array of dices
+      new_dices.push(new_dice);
+
+      // update the state with the new dice id and new array of dices
+      this.setState(
+        {dice_id: dice_id
+        ,list_of_dices: new_dices
+        });
+    }
+
+
+
+
+
+    // increment the number of faces on the screen there is a limit of 20 and the counter will not go above that
+    increaseFaces(){
+
+      if (this.state.number_of_faces < 20){
+        this.setState({number_of_faces: this.state.number_of_faces + 1});
+      }
+    }
+
+
+    // decrease the number of faces on the screen, there is a limit of 1
+   decreaseFaces(){
+
+    if (this.state.number_of_faces > 1){
+        this.setState({number_of_faces: this.state.number_of_faces - 1});
+      }
+    }
+
+    render() {
+
+      return (
+        <div>
+
+          <h1>Number Of Dice&nbsp;</h1>
+          <h1 onClick={this.createDice.bind(this)} >
+            {this.state.dice_id}
+          </h1>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="button" class="button"
+            onClick={this.resetCounter.bind(this)}
+            value="Reset" />
+
+            <br /> <br />
+            <h1>Number Of Faces&nbsp;</h1>
+          <h1>
+            {this.state.number_of_faces}
+          </h1> 
+          
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="button" class="button"
+            onClick={this.increaseFaces.bind(this)}
+            value="Up" />
+
+            <input type="button" class="button"
+            onClick={this.decreaseFaces.bind(this)}
+            value="Down" />
+
+            
+            <input type="button"class="rollbutton" onClick={this.rollAllDices.bind(this)}
+            value="ROLL" />
+            <br /><br /><br />
+         
+
+          <div>
+            <div className="grid-container">
+              {this.state.list_of_dices.map(this.showDice.bind(this))}
+            </div>
+          </div>
+          
+        </div>
+      );
+    }
+  };
+
+  // {this.state.list_of_dices.map(this.showDice)}
+
+  DiceApp.defaultProps =
+    {
+      theProp : 1
+    }
+  
+ 
+  ReactDOM.render(
+                            <div> 
+                              <Title/>
+                               <DiceApp/>
+                              </div>,
+    document.querySelector("#container")
+  );
+
+
+    
+
+  </script>
+  </script>
+
+</body>
+
+</html>
